@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
                     }
                     printf(DARK_PURPLE "] %i%%" RESET, progress);
                     fflush(stdout);
-                    for (delay = 0xffffff; delay--;);
+                    for (delay = 0xffff00; delay--;);
                 }
                 printf("\n");
 
