@@ -1,3 +1,59 @@
+/*
+Documentation
+
+Name        : Naveenkumar Kammar
+Student id  : 26018_039
+Batch id    : 26018D
+Start Date  : 24/09/2026
+End date    : 04/10/2026
+
+Description:
+The following main functions are implemented in the MP3 Tag Reader and Editor project to view and modify MP3 metadata.
+
+main()                  :-> Handles command line arguments and selects the required operation such as help, view or edit.
+                         -> Validates the arguments, checks the MP3 file extension and calls the appropriate function.
+
+view_mp3_details()      :-> Reads and displays the metadata details from an MP3 file.
+                         -> Displays the song title, artist, album, year, genre and comment stored in the ID3 tags.
+
+edit_mp3_details()      :-> Modifies the selected metadata field of an MP3 file based on the edit option provided.
+                         -> Updates the selected ID3 tag while preserving the remaining metadata and audio data.
+
+print_help_menu()       :-> Displays the available commands and operations supported by the project.
+                         -> Provides the options for viewing MP3 details and editing the title, artist, album, year, genre and comment.
+
+
+Sample input:
+$ ./a.out -v AudioFile1.mp3
+
+sample output:
++=============================================================================+
+|                      🎵 MP3 TAG READER AND EDITOR 🎵                       |
++=============================================================================+
+
+========================= 👁️ VIEW AUDIO FILE DETAILS =========================
+
+Loading...[###########################################################] 100%
+
++---------------------------------------------------------------------------+
+| 🎶  Title   : Sunnysunny
+| 🎤  Artist  : Yo Yo Honey Singh - [SongsPk.CC]
+| 💿  Album   : Yaariyan
+| 📅  Year    : 2013
+| 🎼  Genre   : Bollywood Music - [SongsPk.CC]
+| 💬  Comment : eng
++---------------------------------------------------------------------------+
+
+================== AUDIO FILE DETAILS DISPLAYED SUCCESSFULLY =================
+
+✨✨✨   THANK YOU!   ✨✨✨
+
+*/
+
+
+
+
+
 #include <stdio.h>
 #include <string.h>
 #include "mp3.h"
