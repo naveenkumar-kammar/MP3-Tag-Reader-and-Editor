@@ -169,22 +169,6 @@ int main(int argc, char *argv[])
 
             printf(MAGENTA "\n========================= ✏️  EDIT AUDIO FILE DETAILS =========================\n\n" RESET);
 
-            /* Display edit progress */
-            for (progress = 1; progress <= 100; progress++)
-            {
-                printf(DARK_PURPLE "\rEditing...[" RESET);
-                for (j = 1; j <= 59; j++)
-                {
-                    j <= progress * 59 / 100 ? printf(DARK_PURPLE "#" RESET) : printf(DARK_PURPLE " " RESET);
-                }
-                printf(DARK_PURPLE "] %i%%" RESET, progress);
-                fflush(stdout);
-                for (delay = 0xffffff; delay--;);
-            }
-            printf("\n");
-
-            printf(GRAY "\n+---------------------------------------------------------------------------+\n" RESET);
-
             /* Edit MP3 details */
             edit_mp3_details(argv[2], argv[3], new_text);
 

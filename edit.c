@@ -5,6 +5,8 @@
 
 void edit_mp3_details(char *file_name, char *option, char *new_text)
 {
+    int j, delay, progress;
+
     /* Variables for storing frame size and total ID3 tag size */
     unsigned int size;
     unsigned int tag_size;
@@ -16,6 +18,9 @@ void edit_mp3_details(char *file_name, char *option, char *new_text)
     /* Variables for storing target and current frame IDs */
     char frame_id[5];
     char current_frame_id[5];
+
+    /* Variable for storing old frame data */
+    char *old_text = NULL;
 
     /* Variables for storing frame size bytes and frame flags */
     unsigned char size_bytes[4];
@@ -166,6 +171,30 @@ void edit_mp3_details(char *file_name, char *option, char *new_text)
                 return;
             }
 
+            /* Allocate memory for old frame data */
+            old_text = malloc(size);
+
+            if (old_text == NULL)
+            {
+                printf(RED "Memory allocation failed\n" RESET);
+                fclose(fptr);
+                fclose(fp);
+                return;
+            }
+
+            /* Read old frame data except encoding byte */
+            if (fread(old_text, 1, size - 1, fptr) != size - 1)
+            {
+                printf(RED "Error reading old frame data\n" RESET);
+                free(old_text);
+                fclose(fptr);
+                fclose(fp);
+                return;
+            }
+
+            /* Add string terminator */
+            old_text[size - 1] = '\0';
+
             /* Use UTF-8 encoding */
             frame_encode = 0;
 
@@ -174,15 +203,6 @@ void edit_mp3_details(char *file_name, char *option, char *new_text)
 
             /* Write new text to the selected frame */
             fwrite(new_text, 1, strlen(new_text), fp);
-
-            /* Skip old frame data except encoding byte */
-            if (fseek(fptr, size - 1, SEEK_CUR) != 0)
-            {
-                printf(RED "Error skipping old frame data\n" RESET);
-                fclose(fptr);
-                fclose(fp);
-                return;
-            }
         }
         else
         {
@@ -264,6 +284,7 @@ void edit_mp3_details(char *file_name, char *option, char *new_text)
     if (fp == NULL)
     {
         printf(RED "Unable to reopen temporary file\n" RESET);
+        free(old_text);
         return;
     }
 
@@ -285,6 +306,7 @@ void edit_mp3_details(char *file_name, char *option, char *new_text)
     if (remove(file_name) != 0)
     {
         printf(RED "Error removing original file\n" RESET);
+        free(old_text);
         return;
     }
 
@@ -292,44 +314,80 @@ void edit_mp3_details(char *file_name, char *option, char *new_text)
     if (rename("temp.mp3", file_name) != 0)
     {
         printf(RED "Error replacing original file\n" RESET);
+        free(old_text);
         return;
     }
+
+    /* Display edit progress */
+    for (progress = 1; progress <= 100; progress++)
+    {
+        printf(DARK_PURPLE "\rEditing...[" RESET);
+        for (j = 1; j <= 59; j++)
+        {
+            j <= progress * 59 / 100 ? printf(DARK_PURPLE "#" RESET) : printf(DARK_PURPLE " " RESET);
+        }
+        printf(DARK_PURPLE "] %i%%" RESET, progress);
+        fflush(stdout);
+        for (delay = 0xffff00; delay--;);
+    }
+    printf("\n\n");
 
     /* Print update message */
     if (strcmp(option, "-t") == 0)
     {
-        printf(GREEN "| 🎶  Updated Title : %s\n" RESET, new_text);
+        printf(RED "🎶  Editing Title\n" RESET);
+        printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
+        printf(GREEN "| Current : %s\n" RESET, old_text);
+        printf(GREEN "| New     : %s\n" RESET, new_text);
         printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
         printf(ORANGE "✔️  Title updated successfully\n" RESET);
     }
     else if (strcmp(option, "-A") == 0)
     {
-        printf(GREEN "| 🎤  Updated Artist : %s\n" RESET, new_text);
+        printf(RED "🎤  Editing Artist\n" RESET);
+        printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
+        printf(GREEN "| Current : %s\n" RESET, old_text);
+        printf(GREEN "| New     : %s\n" RESET, new_text);
         printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
         printf(ORANGE "✔️  Artist updated successfully\n" RESET);
     }
     else if (strcmp(option, "-a") == 0)
     {
-        printf(GREEN "| 💿  Updated Album : %s\n" RESET, new_text);
+        printf(RED "💿  Editing Album\n" RESET);
+        printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
+        printf(GREEN "| Current : %s\n" RESET, old_text);
+        printf(GREEN "| New     : %s\n" RESET, new_text);
         printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
         printf(ORANGE "✔️  Album updated successfully\n" RESET);
     }
     else if (strcmp(option, "-y") == 0)
     {
-        printf(GREEN "| 📅  Updated Year : %s\n" RESET, new_text);
+        printf(RED "📅  Editing Year\n" RESET);
+        printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
+        printf(GREEN "| Current : %s\n" RESET, old_text);
+        printf(GREEN "| New     : %s\n" RESET, new_text);
         printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
         printf(ORANGE "✔️  Year updated successfully\n" RESET);
     }
     else if (strcmp(option, "-c") == 0)
     {
-        printf(GREEN "| 🎼  Updated Genre : %s\n" RESET, new_text);
+        printf(RED "🎼  Editing Genre\n" RESET);
+        printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
+        printf(GREEN "| Current : %s\n" RESET, old_text);
+        printf(GREEN "| New     : %s\n" RESET, new_text);
         printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
         printf(ORANGE "✔️  Genre updated successfully\n" RESET);
     }
     else if (strcmp(option, "-C") == 0)
     {
-        printf(GREEN "| 💬  Updated Comment : %s\n" RESET, new_text);
+        printf(RED "💬  Editing Comment\n" RESET);
+        printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
+        printf(GREEN "| Current : %s\n" RESET, old_text);
+        printf(GREEN "| New     : %s\n" RESET, new_text);
         printf(GRAY "+---------------------------------------------------------------------------+\n" RESET);
         printf(ORANGE "✔️  Comment updated successfully\n" RESET);
     }
+
+    /* Release memory allocated for old frame data */
+    free(old_text);
 }
